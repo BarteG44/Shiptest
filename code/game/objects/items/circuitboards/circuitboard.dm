@@ -65,3 +65,5 @@ micro-manipulator, console screen, beaker, Microlaser, matter bin, power cells.
 				continue
 			nice_list += list("[req_components[A]] [initial(A.name)]")
 		. += "<span class='notice'>Required components: [english_list(nice_list)].</span>"
+
+/obj/item/circuitboard/wallconsole

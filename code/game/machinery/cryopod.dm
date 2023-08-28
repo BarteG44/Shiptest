@@ -16,7 +16,8 @@ GLOBAL_LIST_EMPTY(cryopod_computers)
 	icon_state = "wallconsole"
 	icon_screen = "wallconsole_cryo"
 	icon_keyboard = null
-	// circuit = /obj/item/circuitboard/cryopodcontrol
+	circuit = /obj/item/circuitboard/wallconsole/cryo_console
+	deconpath = /obj/structure/frame/computer/wallconsole
 	density = FALSE
 	req_one_access = list(ACCESS_HEADS, ACCESS_ARMORY) //Heads of staff or the warden can go here to claim recover items from their department that people went were cryodormed with.
 

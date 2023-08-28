@@ -411,3 +411,11 @@
 /obj/item/circuitboard/computer/shuttle/helm
 	name = "Shuttle Helm (Computer Board)"
 	build_path = /obj/machinery/computer/helm
+
+/obj/item/circuitboard/wallconsole/viewscreen
+	name = "Ship Viewscreen (Computer Board)"
+	build_path = /obj/machinery/computer/helm/viewscreen
+
+/obj/item/circuitboard/wallconsole/cryo_console
+	name = "Cryogenic Oversight Console (Computer Board)"
+	build_path = /obj/machinery/computer/cryopod

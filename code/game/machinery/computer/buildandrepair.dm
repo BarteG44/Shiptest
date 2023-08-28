@@ -178,3 +178,124 @@
 	built_icon = 'icons/obj/machines/retro_computer.dmi'
 	built_icon_state = "computer-solgov"
 	deconpath = /obj/structure/frame/computer/retro
+
+/obj/structure/frame/computer/wallconsole
+	name = "wall console frame"
+	desc = "Used for constructing certain consoles on walls."
+	icon_state = "wallconsole_frame"
+	base_icon_state = "wallconsole_frame"
+	built_icon = 'icons/obj/machines/computer.dmi'
+	built_icon_state = "wallconsole"
+	deconpath = /obj/structure/frame/computer/wallconsole
+	anchored = TRUE
+	density = FALSE
+	state = 1
+
+/obj/structure/frame/computer/wallconsole/attackby(obj/item/P, mob/user, params)
+	switch(state)
+		if(1)
+			if(istype(P, /obj/item/circuitboard/wallconsole))
+				var/obj/item/circuitboard/wallconsole/B = P
+				if(!B.build_path)
+					to_chat(user, "<span class'warning'>This circuitboard seems to be broken.</span>")
+					return
+				if(!user.transferItemToLoc(B, src))
+					return
+				playsound(src.loc, 'sound/items/deconstruct.ogg', 50, TRUE)
+				to_chat(user, "<span class='notice'>You add the circuit board to the frame.</span>")
+				circuit = B
+				icon_state = "wallconsole_frame"
+				state = 2
+				update_appearance()
+				return
+			else if(istype(P, /obj/item/circuitboard))
+				to_chat(user, "<span class='warning'>This frame does not accept circuit boards of this type!</span>")
+				return
+
+			if(P.tool_behaviour == TOOL_WRENCH)
+				user.visible_message("<span class='warning'>[user] unsecures the frame.</span>", \
+									"<span class='notice'>You start to deattach the frame...</span>", "<span class='hear'>You hear banging and clanking.</span>")
+				if(P.use_tool(src, user, 40, volume=50))
+					if(state == 1)
+						to_chat(user, "<span class='notice'>You [anchored ? "un" : ""]secure [src].</span>")
+						var/obj/item/wallframe/wallconsole/M = new (loc)
+						M.add_fingerprint(user)
+						qdel(src)
+		if(2)
+			if(istype(P, /obj/item/stack/cable_coil))
+				if(!P.tool_start_check(user, amount=5))
+					return
+				to_chat(user, "<span class='notice'>You start to add cables to the frame...</span>")
+				if(P.use_tool(src, user, 20, volume=50, amount=5))
+					to_chat(user, "<span class='notice'>You add cables to the frame.</span>")
+					state = 3
+					update_appearance()
+				return
+			if(P.tool_behaviour == TOOL_CROWBAR)
+				P.play_tool_sound(src)
+				state = 1
+				circuit.forceMove(drop_location())
+				circuit = null
+				to_chat(user, "<span class='notice'>You remove the circuit board.</span>")
+				desc = initial(desc)
+				update_appearance()
+				return
+		if(3)
+			if(istype(P, /obj/item/stack/sheet/glass))
+				if(!P.tool_start_check(user, amount=1))
+					return
+				playsound(src, 'sound/items/deconstruct.ogg', 50, TRUE)
+				to_chat(user, "<span class='notice'>You start to put in the glass panel...</span>")
+				if(P.use_tool(src, user, 20, amount=1))
+					if(state != 3)
+						return
+					to_chat(user, "<span class='notice'>You put in the glass panel.</span>")
+					state = 4
+					update_appearance()
+				return
+			if(P.tool_behaviour == TOOL_WIRECUTTER)
+				P.play_tool_sound(src)
+				to_chat(user, "<span class='notice'>You start to remove the cables...</span>")
+				if(P.use_tool(src, user, 20, volume=50))
+					to_chat(user, "<span class='notice'>You remove the cables.</span>")
+					state = 2
+					new /obj/item/stack/cable_coil(drop_location(), 5)
+					update_appearance()
+				return
+		if(4)
+			if(P.tool_behaviour == TOOL_CROWBAR)
+				P.play_tool_sound(src)
+				to_chat(user, "<span class='notice'>You remove the glass panel.</span>")
+				state = 3
+				var/obj/item/stack/sheet/glass/G = new(drop_location(), 1)
+				G.add_fingerprint(user)
+				update_appearance()
+			if(P.tool_behaviour == TOOL_SCREWDRIVER)
+				P.play_tool_sound(src)
+				to_chat(user, "<span class='notice'>You connect the monitor.</span>")
+				var/obj/machinery/computer/built_comp = new circuit.build_path (loc, circuit)
+				built_comp.setDir(dir)
+				transfer_fingerprints_to(built_comp)
+				if(!built_comp.unique_icon)
+					built_comp.icon = built_icon
+					built_comp.icon_state = built_icon_state
+				built_comp.pixel_y = pixel_y
+				built_comp.pixel_x = pixel_x
+				built_comp.deconpath = deconpath
+				built_comp.update_appearance()
+				qdel(src)
+				return
+
+/obj/structure/frame/computer/wallconsole/Initialize(mapload, ndir, building)
+	. = ..()
+	if(building)
+		setDir(ndir)
+
+/obj/item/wallframe/wallconsole
+	name = "wall console assembly"
+	desc = "Used for constructing certain consoles on walls."
+	icon = 'icons/obj/machines/computer.dmi'
+	icon_state = "wallconsole"
+	item_state = "wallconsole"
+	result_path = /obj/structure/frame/computer/wallconsole
+	pixel_shift = -21

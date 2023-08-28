@@ -413,10 +413,12 @@
 	icon_state = "wallconsole"
 	icon_screen = "wallconsole_navigation"
 	icon_keyboard = null
+	circuit = /obj/item/circuitboard/wallconsole/viewscreen
 	layer = SIGN_LAYER
 	density = FALSE
 	viewer = TRUE
 	unique_icon = TRUE
+	deconpath = /obj/structure/frame/computer/wallconsole
 
 MAPPING_DIRECTIONAL_HELPERS(/obj/machinery/computer/helm/viewscreen, 17)
 
